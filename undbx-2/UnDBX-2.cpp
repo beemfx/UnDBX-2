@@ -102,7 +102,7 @@ namespace UnDBX2
 				const fs::path Filename = std::format("{:05}.eml", i);
 				const fs::path FullPath = FullFolderPath / Filename;
 
-				std::ofstream OutFile(FullPath);
+				std::ofstream OutFile(FullPath, std::ios::binary);
 
 				if (OutFile.is_open())
 				{
