@@ -32,8 +32,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-  #include "dbxsys.h"
   
   void eml_parse(char *message, char **subject, char **from, char **to, time_t *timestamp);
 

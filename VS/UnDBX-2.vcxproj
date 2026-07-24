@@ -19,20 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\undbx\configure.ac" />
     <None Include="..\undbx\COPYING" />
-    <None Include="..\undbx\dist-win32.sh" />
-    <None Include="..\undbx\INSTALL" />
-    <None Include="..\undbx\Makefile.am" />
     <None Include="..\undbx\README.rst" />
-    <None Include="..\undbx\undbx.hta" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\undbx-2\UnDBX-2.cpp" />
     <ClCompile Include="..\undbx-2\UnDBXFile.cpp" />
     <ClCompile Include="..\undbx\dbxprogress.c" />
     <ClCompile Include="..\undbx\dbxread.c" />
-    <ClCompile Include="..\undbx\dbxsys.c" />
     <ClCompile Include="..\undbx\emlread.c" />
     <ClCompile Include="..\undbx\undbx.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -45,7 +39,6 @@
     <ClInclude Include="..\undbx-2\UnDBXFile.h" />
     <ClInclude Include="..\undbx\dbxprogress.h" />
     <ClInclude Include="..\undbx\dbxread.h" />
-    <ClInclude Include="..\undbx\dbxsys.h" />
     <ClInclude Include="..\undbx\emlread.h" />
   </ItemGroup>
   <ItemGroup>
@@ -123,7 +116,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>HAVE_CONFIG_H;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>../undbx;../undbx-2</AdditionalIncludeDirectories>
@@ -142,7 +135,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>HAVE_CONFIG_H;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>../undbx;../undbx-2</AdditionalIncludeDirectories>
@@ -159,7 +152,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>HAVE_CONFIG_H;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>../undbx;../undbx-2</AdditionalIncludeDirectories>
@@ -178,7 +171,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>HAVE_CONFIG_H;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>../undbx;../undbx-2</AdditionalIncludeDirectories>

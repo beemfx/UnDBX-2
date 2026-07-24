@@ -33,9 +33,11 @@
 extern "C" {
 #endif
 
-#include "dbxsys.h"
 #include "dbxprogress.h"
 #include "UnDBXFile.h"
+#include <time.h>
+
+typedef unsigned long long int filetime_t;
   
 #define DBX_MAX_FILENAME 128 
 

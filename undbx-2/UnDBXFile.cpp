@@ -9,7 +9,7 @@ private:
 	std::ifstream m_Stream;
 
 public:
-	UnDBXFileReader(char* Filename)
+	UnDBXFileReader(const char* Filename)
 		: m_Stream(Filename, std::ios::binary)
 	{
 	}
@@ -44,7 +44,7 @@ public:
 	}
 };
 
-UnDBXFile* UnDBXFile_Open(char* Filename, int OpenType)
+UnDBXFile* UnDBXFile_Open(const char* Filename, int OpenType)
 {
 	if (!std::filesystem::exists(Filename))
 	{
@@ -99,4 +99,56 @@ size_t UnDBXFile_Seek(UnDBXFile* File, long Distance, int Type)
 
 	UnDBXFileReader* Reader = reinterpret_cast<UnDBXFileReader*>(File->Impl);
 	return Reader ? Reader->Seek(Distance, Type) : 0;
+}
+
+size_t UnDBXFile_GetSize(const char* Filename)
+{
+	return std::filesystem::file_size(Filename);
+}
+
+void UnDBXFile_Read_long_long(long long int* value, UnDBXFile* file)
+{
+#ifndef WORDS_BIGENDIAN
+	UnDBXFile_Read(value, 1, sizeof(long long int), file);
+#else
+	/* the following code is endianness neutral */
+	long long int llw = 0;
+	llw = (long long int) (fgetc(file) & 0xFF);
+	llw |= ((long long int) (fgetc(file) & 0xFF) << 0x08);
+	llw |= ((long long int) (fgetc(file) & 0xFF) << 0x10);
+	llw |= ((long long int) (fgetc(file) & 0xFF) << 0x18);
+	llw |= ((long long int) (fgetc(file) & 0xFF) << 0x20);
+	llw |= ((long long int) (fgetc(file) & 0xFF) << 0x28);
+	llw |= ((long long int) (fgetc(file) & 0xFF) << 0x30);
+	llw |= ((long long int) (fgetc(file) & 0xFF) << 0x38);
+	*value = llw;
+#endif
+}
+
+void UnDBXFile_Read_int(int* value, UnDBXFile* file)
+{
+#ifndef WORDS_BIGENDIAN
+	UnDBXFile_Read(value, 1, sizeof(int), file);
+#else
+	/* the following code is endianness neutral */
+	int dw = 0;
+	dw = (int)(fgetc(file) & 0xFF);
+	dw |= ((int)(fgetc(file) & 0xFF) << 0x08);
+	dw |= ((int)(fgetc(file) & 0xFF) << 0x10);
+	dw |= ((int)(fgetc(file) & 0xFF) << 0x18);
+	*value = dw;
+#endif
+}
+
+void UnDBXFile_Read_short(short* value, UnDBXFile* file)
+{
+#ifndef WORDS_BIGENDIAN
+	UnDBXFile_Read(value, 1, sizeof(short), file);
+#else
+	/* the following code is endianness neutral */
+	short w = 0;
+	w = (short)(fgetc(file) & 0xFF);
+	w |= ((short)(fgetc(file) & 0xFF) << 0x08);
+	*value = w;
+#endif
 }

@@ -9,25 +9,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\undbx\configure.ac">
-      <Filter>undbx</Filter>
-    </None>
     <None Include="..\undbx\COPYING">
       <Filter>undbx</Filter>
     </None>
-    <None Include="..\undbx\dist-win32.sh">
-      <Filter>undbx</Filter>
-    </None>
-    <None Include="..\undbx\INSTALL">
-      <Filter>undbx</Filter>
-    </None>
-    <None Include="..\undbx\Makefile.am">
-      <Filter>undbx</Filter>
-    </None>
     <None Include="..\undbx\README.rst">
-      <Filter>undbx</Filter>
-    </None>
-    <None Include="..\undbx\undbx.hta">
       <Filter>undbx</Filter>
     </None>
   </ItemGroup>
@@ -36,9 +21,6 @@
       <Filter>undbx</Filter>
     </ClCompile>
     <ClCompile Include="..\undbx\dbxread.c">
-      <Filter>undbx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\undbx\dbxsys.c">
       <Filter>undbx</Filter>
     </ClCompile>
     <ClCompile Include="..\undbx\emlread.c">
@@ -59,9 +41,6 @@
       <Filter>undbx</Filter>
     </ClInclude>
     <ClInclude Include="..\undbx\dbxread.h">
-      <Filter>undbx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\undbx\dbxsys.h">
       <Filter>undbx</Filter>
     </ClInclude>
     <ClInclude Include="..\undbx\emlread.h">
