@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <filesystem>
+#include <fstream>
 
 namespace UnDBX2
 {
@@ -41,8 +42,9 @@ namespace UnDBX2
 		struct Message
 		{
 			dbx_type_t Type = DBX_TYPE_UNKNOWN;
-			std::u8string Text;
+			std::string Text;
 			std::size_t TextHash = 0;
+			fs::path Folder;
 
 			bool operator == (const Message& Other) const
 			{
@@ -53,14 +55,18 @@ namespace UnDBX2
 		std::vector<Message> m_AllMessages;
 
 	public:
-		void AddMessage(dbx_type_t Type, const char* RawText, unsigned int RawTextSize)
+		void AddMessage(dbx_type_t Type, const fs::path& DBXFilename, const char* RawText, unsigned int RawTextSize)
 		{
 			if (Type == DBX_TYPE_EMAIL || Type == DBX_TYPE_OE4)
 			{
-				Message msg = { Type, std::u8string(reinterpret_cast<const char8_t*>(RawText)) };
-				msg.TextHash = std::hash<std::u8string>{}(msg.Text);
+				Message msg = { Type, std::string(RawText) };
+				msg.TextHash = std::hash<std::string>{}(msg.Text);
 
-				// If a duplicate message is found, ignore it.
+				msg.Folder = DBXFilename.filename();
+				msg.Folder.replace_extension();
+
+				// If a duplicate message is found, ignore it. (This will only
+				// keep the first folder it was found in.)
 				if (!Contains(msg))
 				{
 					m_AllMessages.push_back(msg);
@@ -71,6 +77,39 @@ namespace UnDBX2
 		void PrintStats()
 		{
 			std::cout << "Message Count: " << m_AllMessages.size() << std::endl;
+		}
+
+		void SaveFiles(const fs::path& DumpDir)
+		{
+			if (!fs::exists(DumpDir) || !fs::is_directory(DumpDir))
+			{
+				std::cout << "Invalid dump directory. " << std::endl;
+				return;
+			}
+
+
+			for (std::size_t i = 0; i < m_AllMessages.size(); i++)
+			{
+				const Message& Msg = m_AllMessages[i];
+
+				const fs::path FullFolderPath = DumpDir / Msg.Folder;
+
+				if (!fs::exists(FullFolderPath) && !fs::is_directory(FullFolderPath))
+				{
+					fs::create_directories(FullFolderPath);
+				}
+
+				const fs::path Filename = std::format("{:05}.eml", i);
+				const fs::path FullPath = FullFolderPath / Filename;
+
+				std::ofstream OutFile(FullPath);
+
+				if (OutFile.is_open())
+				{
+					OutFile << Msg.Text;
+					OutFile.close();
+				}
+			}
 		}
 
 	private:
@@ -95,7 +134,7 @@ int main(int argc, char** argv)
 
 	std::cout << "UnDBX2" << std::endl;
 
-	if (argc < 2)
+	if (argc < 3)
 	{
 		return -1;
 	}
@@ -103,6 +142,8 @@ int main(int argc, char** argv)
 	UnDBXDatabase db;
 
 	const fs::path DirToSearch = argv[1];
+	const fs::path DumpDir = argv[2];
+
 	const std::vector<fs::path> AllFiles = GetAllFilesRecursive(DirToSearch);
 
 	dbx_options_t options = { 0 };
@@ -113,7 +154,7 @@ int main(int argc, char** argv)
 	options.delete_deleted = 0;
 	options.ignore0 = 0;
 	options.debug = 0;
-	
+
 	for (const auto& Path : AllFiles)
 	{
 		std::cout << Path.string() << std::endl;
@@ -124,7 +165,7 @@ int main(int argc, char** argv)
 			{
 				unsigned int MessageSize = 0;
 				const char* Message = dbx_message(dbx, i, &MessageSize);
-				db.AddMessage(dbx->type, Message, MessageSize);
+				db.AddMessage(dbx->type, Path, Message, MessageSize);
 			}
 
 			dbx_close(dbx);
@@ -132,4 +173,5 @@ int main(int argc, char** argv)
 	}
 
 	db.PrintStats();
+	db.SaveFiles(DumpDir);
 }
