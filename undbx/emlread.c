@@ -39,9 +39,9 @@
 enum {
   EOK = 0,
   EPARSE,
-  ENOMEM,
+  E_ENOMEM,
   EBAD2047,
-  EINVAL,
+  E_EINVAL,
   EFULL
 };
 
@@ -57,7 +57,7 @@ static int _eml_str_append_n (char **to, const char *from, size_t n)
     l = strlen (*to);
     bigger = realloc (*to, l + n + 1);
     if (!bigger)
-      return ENOMEM;
+      return E_ENOMEM;
     *to = bigger;
   }
   else
@@ -329,7 +329,7 @@ static int _eml_parse822_day (const char **p, const char *e, int *day)
     return EPARSE;
 
   for (d = 0; days[d]; d++) {
-    if (strncasecmp (*p, days[d], 3) == 0) {
+    if (_strnicmp (*p, days[d], 3) == 0) {
       *p += 3;
       if (day)
         *day = d;
@@ -376,7 +376,7 @@ static int _eml_parse822_date (const char **p, const char *e, int *day, int *mon
     return EPARSE;
 
   for (m = 0; mons[m]; m++) {
-    if (strncasecmp (*p, mons[m], 3) == 0) {
+    if (_strnicmp (*p, mons[m], 3) == 0) {
       *p += 3;
       if (mon)
         *mon = m;
@@ -477,7 +477,7 @@ static int _eml_parse822_time (const char **p, const char *e,
   }
 
   for (; tzs[z].tzname; z++) {
-    if (strcasecmp (zone, tzs[z].tzname) == 0)
+    if (strcmp (zone, tzs[z].tzname) == 0)
       break;
   }
   if (tzs[z].tzname) {
@@ -788,7 +788,7 @@ static int _eml_getword (char **pret, const char **pstr, int delim)
   len = end - start;
   ret = malloc (len + 1);
   if (!ret)
-    return ENOMEM;
+    return E_ENOMEM;
   memcpy (ret, start, len);
   ret[len] = 0;
   *pstr = end + 1;
@@ -822,13 +822,13 @@ static int _eml_rfc2047_decode (const char *input, char **ptostr)
             free (fromcode);                            \
             free (encoding_type);                       \
             free (encoded_text);                        \
-            return ENOMEM;                              \
+            return E_ENOMEM;                              \
           }                                             \
       }                                                 \
   } while (0) 
   
   if (!input)
-    return EINVAL;
+    return E_EINVAL;
   if (!ptostr)
     return EFULL;
 
@@ -837,7 +837,7 @@ static int _eml_rfc2047_decode (const char *input, char **ptostr)
   bufsize = strlen (fromstr) + 1;
   buffer = malloc (bufsize);
   if (buffer == NULL)
-    return ENOMEM;
+    return E_ENOMEM;
   bufpos = 0;
   
   while (*fromstr) {
@@ -969,25 +969,25 @@ void eml_parse(char *message, char **subject, char **from, char **to, time_t *ti
   while (_eml_parse822_field_name((const char **)&pmessage, pstop, &pname) == EOK &&
          _eml_parse822_field_body((const char **)&pmessage, pstop, &pbody) == EOK) {
     /* printf("\033[1;31;48m%s\033[0m: \"%s\"\n", pname, pbody); */
-    if (strcasecmp(pname, "subject") == 0) {
+    if (strcmp(pname, "subject") == 0) {
       if (_eml_rfc2047_decode(pbody, subject) != EOK) {
         free(*subject);
         *subject = NULL;
       }
     }
-    else if (strcasecmp(pname, "from") == 0) {
+    else if (strcmp(pname, "from") == 0) {
       if (_eml_rfc2047_decode(pbody, from) != EOK) {
         free(*from);
         *from = NULL;
       }
     }
-    else if (strcasecmp(pname, "to") == 0) {
+    else if (strcmp(pname, "to") == 0) {
       if (_eml_rfc2047_decode(pbody, to) != EOK) {
         free(*to);
         *to = NULL;
       }
     }
-    else if (strcasecmp(pname, "date") == 0) {
+    else if (strcmp(pname, "date") == 0) {
       char *pdate = pbody;
       struct tm tm;
       time_t tzoffset = 0;

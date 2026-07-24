@@ -28,14 +28,14 @@
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
-# define DBX_VERSION PACKAGE_VERSION
+# define DBX_VERSION "UnDBX-2"
 #endif
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include <getopt.h>
+// #include <getopt.h>
 #include "dbxread.h"
 
 typedef enum { DBX_SAVE_NOOP, DBX_SAVE_OK, DBX_SAVE_ERROR } dbx_save_status_t;
@@ -53,7 +53,7 @@ static int _dbx_offset_cmp(const dbx_info_t *ia, const dbx_info_t *ib)
 
 static dbx_save_status_t _save_message(char *dir, char *filename, char *message, unsigned int size)
 {
-  FILE *eml = NULL;
+  UnDBXFile *eml = NULL;
   char *cwd = NULL;
   size_t b = 0;
   int rc = 0;
@@ -193,7 +193,7 @@ static void _recover(dbx_t *dbx, char *out_dir, char *eml_dir, int *saved, int *
     time_t timestamp = 0;
     
     if (dbx->scan[i].count > 0) {
-      char *dest_dir = strdup(eml_dir);
+      char *dest_dir = _strdup(eml_dir);
       if (dbx->scan[i].deleted) {
         dest_dir = (char *)realloc(dest_dir, sizeof(char) * (strlen(dest_dir) + strlen("/deleted") + 1));
         strcat(dest_dir, "/deleted");
@@ -423,7 +423,7 @@ static int _undbx(char *dbx_dir, char *out_dir, char *dbx_file, dbx_options_t *o
     dbx_progress_message(dbx->progress_handle, DBX_STATUS_WARNING,"DBX file %s is corrupted (larger than 2GB)", dbx_file);
   }
 
-  eml_dir = strdup(dbx_file);
+  eml_dir = _strdup(dbx_file);
   eml_dir[strlen(eml_dir) - 4] = '\0';
   rc = sys_mkdir(out_dir, eml_dir);
   if (rc != 0) {
@@ -459,13 +459,13 @@ static char **_get_files(char **dir, int *num_files)
   int l = strlen(*dir);
   
   files = sys_glob(*dir, "*.dbx", num_files);
-  if (*num_files == 0 && l > 4 && strcasecmp(*dir + l - 4, ".dbx") == 0) {
+  if (*num_files == 0 && l > 4 && strcmp(*dir + l - 4, ".dbx") == 0) {
     char *dirname = NULL;
     sys_glob_free(files);
     files = (char **)calloc(2, sizeof(char *));
-    files[0] = strdup(sys_basename(*dir));
+    files[0] = _strdup(sys_basename(*dir));
     *num_files = 1;
-    dirname = strdup(sys_dirname(*dir));
+    dirname = _strdup(sys_dirname(*dir));
     free(*dir);
     *dir = dirname;
   }
@@ -475,10 +475,10 @@ static char **_get_files(char **dir, int *num_files)
 
 static void _usage(char *prog, int rc)
 {
-  FILE *stream = (rc == EXIT_SUCCESS)? stdout:stderr;
+  UnDBXFile *stream = (rc == EXIT_SUCCESS)? stdout:stderr;
   
   fprintf(stream,
-          "Usage: %s [<OPTION>] <DBX-FOLDER | DBX-FILE> [<OUTPUT-FOLDER>]\n"
+          "Usage: %s [<OPTION>] <DBX-FOLDER | DBX-UnDBXFile> [<OUTPUT-FOLDER>]\n"
           "\n"
           "Options:\n"
           "\t-h, --help        \t show this message\n"
@@ -501,7 +501,7 @@ static void _usage(char *prog, int rc)
 #include <windows.h>
 static void _gui(char *prog)
 {
-  FILE *rfp = NULL;
+  UnDBXFile *rfp = NULL;
   char fn[256];
   char cmd[256];
   snprintf(fn, 256, "%s/undbx.hta", sys_dirname(prog));
@@ -520,6 +520,7 @@ static void _gui(char *prog)
 }
 #endif
 
+#if 0
 int main(int argc, char *argv[])
 {
   int n = 0;
@@ -599,7 +600,7 @@ int main(int argc, char *argv[])
     _usage(argv[0], EXIT_FAILURE);
   }
 
-  dbx_dir = strdup(argv[optind]);
+  dbx_dir = _strdup(argv[optind]);
   
   if (argc - optind == 2)
     out_dir = argv[optind + 1];
@@ -622,3 +623,4 @@ int main(int argc, char *argv[])
 
   return EXIT_SUCCESS;
 }
+#endif

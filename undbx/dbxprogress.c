@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "dbxprogress.h"
-
+#include "UnDBXFile.h"
 
 typedef struct dbx_progress_bar_s {
   int enabled;
@@ -68,7 +68,7 @@ static void _dbx_progress_vprintf(dbx_status_t status,
                                   va_list ap,
                                   char *suffix)
 {
-  FILE *stream = (status < DBX_STATUS_WARNING)? stdout:stderr;
+  UnDBXFile *stream = (status < DBX_STATUS_WARNING)? stdout:stderr;
   fputs(prefix, stream);
   if (format)
     vfprintf(stream, format, ap);

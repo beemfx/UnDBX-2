@@ -37,7 +37,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include <libgen.h>
+// #include <libgen.h>
 
 #include "dbxsys.h"
 
@@ -61,7 +61,7 @@ static char **_sys_glob(char *pattern, int *num_files)
 
   files = (char **)calloc(result.gl_pathc + 1, sizeof(char *));
   for (i = 0 ; i < result.gl_pathc; i++) {
-    files[i] = strdup(result.gl_pathv[i]);
+    files[i] = _strdup(result.gl_pathv[i]);
   }
   
   if (num_files)
@@ -115,7 +115,7 @@ static char **_sys_glob(char *pattern, int *num_files)
 
     do {
       files = (char **)realloc(files, sizeof(char *) * (n + 1));
-      files[n] = strdup(f.cFileName);
+      files[n] = _strdup(f.cFileName);
       n++;
     } while (FindNextFile(h, &f));
     
@@ -142,7 +142,7 @@ static int _sys_chdir(char *dir)
   int rc;
   /* _chdir doesn't if dir is just C: - must add \ */
   int l = strlen(dir);
-  char *path = strdup(dir);
+  char *path = _strdup(dir);
   if (path == NULL)
     return -1;
   if (path[l-1] == ':') {
@@ -288,7 +288,7 @@ int sys_delete(char *parent, char *filename)
     return -1;
   }
   
-  rc = unlink(filename);
+  rc = _unlink(filename);
   sys_chdir(cwd);
   free(cwd);
 
@@ -336,6 +336,7 @@ int sys_set_filetime(char *filename, filetime_t filetime)
   return sys_set_time(filename, (time_t)t);
 }
 
+/*
 char *sys_basename(char *path)
 {
   return basename(path);
@@ -345,13 +346,14 @@ char *sys_dirname(char *path)
 {
   return dirname(path);
 }
+*/
 
-size_t sys_fread(void *ptr, size_t size, size_t nitems, FILE *stream)
+size_t sys_fread(void *ptr, size_t size, size_t nitems, UnDBXFile *stream)
 {
-  return fread(ptr, size, nitems, stream);
+  return UnDBXFile_Read(ptr, size, nitems, stream);
 }
 
-void sys_fread_long_long(long long int *value, FILE *file)
+void sys_fread_long_long(long long int *value, UnDBXFile *file)
 {
 #ifndef WORDS_BIGENDIAN
   sys_fread(value, 1, sizeof(long long int), file);
@@ -370,7 +372,7 @@ void sys_fread_long_long(long long int *value, FILE *file)
 #endif
 }
 
-void sys_fread_int(int *value, FILE *file)
+void sys_fread_int(int *value, UnDBXFile *file)
 {
 #ifndef WORDS_BIGENDIAN
   sys_fread(value, 1, sizeof(int), file);
@@ -385,7 +387,7 @@ void sys_fread_int(int *value, FILE *file)
 #endif
 }
 
-void sys_fread_short(short *value, FILE *file)
+void sys_fread_short(short *value, UnDBXFile *file)
 {
 #ifndef WORDS_BIGENDIAN
   sys_fread(value, 1, sizeof(short), file);

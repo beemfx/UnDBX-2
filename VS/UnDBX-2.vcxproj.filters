@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="undbx">
+      <UniqueIdentifier>{973576bc-4c73-4de0-b5f4-aa1749cf4908}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="undbx-2">
+      <UniqueIdentifier>{3dc7e55f-66e3-4693-8f91-fab3ed697472}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\undbx\configure.ac">
+      <Filter>undbx</Filter>
+    </None>
+    <None Include="..\undbx\COPYING">
+      <Filter>undbx</Filter>
+    </None>
+    <None Include="..\undbx\dist-win32.sh">
+      <Filter>undbx</Filter>
+    </None>
+    <None Include="..\undbx\INSTALL">
+      <Filter>undbx</Filter>
+    </None>
+    <None Include="..\undbx\Makefile.am">
+      <Filter>undbx</Filter>
+    </None>
+    <None Include="..\undbx\README.rst">
+      <Filter>undbx</Filter>
+    </None>
+    <None Include="..\undbx\undbx.hta">
+      <Filter>undbx</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\undbx\dbxprogress.c">
+      <Filter>undbx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\undbx\dbxread.c">
+      <Filter>undbx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\undbx\dbxsys.c">
+      <Filter>undbx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\undbx\emlread.c">
+      <Filter>undbx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\undbx\undbx.c">
+      <Filter>undbx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\undbx-2\UnDBX-2.cpp">
+      <Filter>undbx-2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\undbx-2\UnDBXFile.cpp">
+      <Filter>undbx-2</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\undbx\dbxprogress.h">
+      <Filter>undbx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\undbx\dbxread.h">
+      <Filter>undbx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\undbx\dbxsys.h">
+      <Filter>undbx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\undbx\emlread.h">
+      <Filter>undbx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\undbx-2\UnDBXFile.h">
+      <Filter>undbx-2</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\undbx\UnDBX.xml">
+      <Filter>undbx</Filter>
+    </Xml>
+  </ItemGroup>
+</Project>

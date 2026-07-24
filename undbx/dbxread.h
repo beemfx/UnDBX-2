@@ -35,6 +35,7 @@ extern "C" {
 
 #include "dbxsys.h"
 #include "dbxprogress.h"
+#include "UnDBXFile.h"
   
 #define DBX_MAX_FILENAME 128 
 
@@ -116,7 +117,7 @@ extern "C" {
   
   typedef struct dbx_s {
     char *filename;
-    FILE *file;
+    UnDBXFile *file;
     dbx_options_t *options;
     dbx_progress_handle_t progress_handle;
     unsigned long long int file_size;
@@ -128,7 +129,7 @@ extern "C" {
     int scan_count;
   } dbx_t;
 
-  dbx_t *dbx_open(char *filename, dbx_options_t *options);
+  dbx_t *dbx_open(const char *filename, dbx_options_t *options);
   void dbx_close(dbx_t *dbx);
   char *dbx_message(dbx_t *dbx, int msg_number, unsigned int *psize);
   char *dbx_recover_message(dbx_t *dbx, int chain_index, int msg_number, unsigned int *psize, time_t *ptimestamp, char **pfilename);

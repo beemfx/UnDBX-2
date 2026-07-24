@@ -212,9 +212,9 @@ an Autoconf bug.  Until the bug is fixed you can use this workaround:
      Print the version of Autoconf used to generate the `configure'
      script, and exit.
 
-`--cache-file=FILE'
-     Enable the cache: use and save the results of the tests in FILE,
-     traditionally `config.cache'.  FILE defaults to `/dev/null' to
+`--cache-file=UnDBXFile'
+     Enable the cache: use and save the results of the tests in UnDBXFile,
+     traditionally `config.cache'.  UnDBXFile defaults to `/dev/null' to
      disable caching.
 
 `--config-cache'

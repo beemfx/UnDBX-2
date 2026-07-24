@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="UnDBX-2.vcxproj" Id="9ebc3a77-8496-4c3e-8c99-a7b76cf9224a" />
+</Solution>

@@ -49,14 +49,14 @@ static int _dbx_info_cmp(const dbx_info_t *ia, const dbx_info_t *ib)
   return res;
 }
 
-static char *_dbx_read_string(FILE *file, int offset)
+static char *_dbx_read_string(UnDBXFile *file, int offset)
 {
   char c[256] = {};
   char *s = NULL;
   int n = 0;
   int l = 0;
 
-  fseek(file, offset, SEEK_SET);
+  UnDBXFile_Seek(file, offset, SEEK_SET);
 
   do {
     sys_fread(c, 1, 255, file);
@@ -70,19 +70,19 @@ static char *_dbx_read_string(FILE *file, int offset)
   return s;
 }
 
-static filetime_t _dbx_read_date(FILE *file, int offset)
+static filetime_t _dbx_read_date(UnDBXFile *file, int offset)
 {
   filetime_t filetime = 0;
-  fseek(file, offset, SEEK_SET);
+  UnDBXFile_Seek(file, offset, SEEK_SET);
   sys_fread_long_long((long long int *)&filetime, file);
   return filetime;
 }
 
-static int _dbx_read_int(FILE *file, int offset, int value)
+static int _dbx_read_int(UnDBXFile *file, int offset, int value)
 {
   int val = value;
   if (offset) {
-    fseek(file, offset, SEEK_SET);
+    UnDBXFile_Seek(file, offset, SEEK_SET);
     sys_fread_int(&val, file);
   }
   return val;
@@ -101,11 +101,11 @@ static int _dbx_read_msg_offset(dbx_t *dbx, int msg_number)
 
   index = dbx->info[msg_number].index;
 
-  fseek(dbx->file, index + 4, SEEK_SET);
+  UnDBXFile_Seek(dbx->file, index + 4, SEEK_SET);
   sys_fread_int(&size, dbx->file);
-  fseek(dbx->file, 2, SEEK_CUR);
+  UnDBXFile_Seek(dbx->file, 2, SEEK_CUR);
   sys_fread(&count, 1, 1, dbx->file);
-  fseek(dbx->file, 1, SEEK_CUR);
+  UnDBXFile_Seek(dbx->file, 1, SEEK_CUR);
 
   for (i = 0; i < count; i++) {
     sys_fread_int((int *)&value, dbx->file);
@@ -123,7 +123,7 @@ static int _dbx_read_msg_offset(dbx_t *dbx, int msg_number)
   }
         
   if (msg_offset == 0 && msg_offset_ptr != 0) {
-    fseek(dbx->file, msg_offset_ptr, SEEK_SET);
+    UnDBXFile_Seek(dbx->file, msg_offset_ptr, SEEK_SET);
     sys_fread_int(&msg_offset, dbx->file);
   }
 
@@ -164,7 +164,7 @@ static void _dbx_set_filename(dbx_info_t *info)
   
   _dbx_sanitize_filename(filename);
 
-  info->filename = strdup(filename);
+  info->filename = _strdup(filename);
   /* remove trailing extra space (reserved for uniquification of filename) */
   info->filename[strlen(info->filename) - sizeof("00000000")] = '\0';
 }
@@ -211,7 +211,7 @@ static void _dbx_read_info(dbx_t *dbx)
     int offset = 0;
     int pos = index + 12;
 
-    fseek(dbx->file, index + 4, SEEK_SET);
+    UnDBXFile_Seek(dbx->file, index + 4, SEEK_SET);
     sys_fread_int(&size, dbx->file);
     sys_fread_int(&count, dbx->file);
     count = (count & 0x00FF0000) >> 16;
@@ -222,7 +222,7 @@ static void _dbx_read_info(dbx_t *dbx)
       int type = 0;
       unsigned int value = 0;
 
-      fseek(dbx->file, pos, SEEK_SET);
+      UnDBXFile_Seek(dbx->file, pos, SEEK_SET);
       sys_fread_int((int*)&value, dbx->file);
       type = value & 0xFF;
       value = (value >> 8) & 0xFFFFFF;
@@ -316,7 +316,7 @@ static void _dbx_read_info(dbx_t *dbx)
       if (dbx->info[i].offset == 0)  /* message only in index, not downloaded yet */
         msg_offset = dbx->info[i].index;
       sprintf(filename, "%08X.eml", (unsigned int) msg_offset);
-      dbx->info[i].filename = strdup(filename);
+      dbx->info[i].filename = _strdup(filename);
     }
     else {
       _dbx_set_filename(dbx->info + i);
@@ -341,9 +341,9 @@ static int _dbx_read_index(dbx_t *dbx, int pos)
     return 0;
   }
 
-  fseek(dbx->file, pos + 8, SEEK_SET);
+  UnDBXFile_Seek(dbx->file, pos + 8, SEEK_SET);
   sys_fread_int(&next_table, dbx->file);
-  fseek(dbx->file, 5, SEEK_CUR);
+  UnDBXFile_Seek(dbx->file, 5, SEEK_CUR);
   sys_fread(&ptr_count, 1, 1, dbx->file);
   if (ptr_count <= 0) {
     dbx_progress_message(dbx->progress_handle,
@@ -354,7 +354,7 @@ static int _dbx_read_index(dbx_t *dbx, int pos)
                          pos + 8 + 4 + 5);
     return 0;
   }
-  fseek(dbx->file, 2, SEEK_CUR);
+  UnDBXFile_Seek(dbx->file, 2, SEEK_CUR);
   sys_fread_int(&index_count, dbx->file);
 
   if (index_count > 0) {
@@ -368,7 +368,7 @@ static int _dbx_read_index(dbx_t *dbx, int pos)
   dbx->capacity += ptr_count;
   for (i = 0; i < ptr_count; i++) {
     int index_ptr;
-    fseek(dbx->file, pos, SEEK_SET);
+    UnDBXFile_Seek(dbx->file, pos, SEEK_SET);
     sys_fread_int(&index_ptr, dbx->file);
     sys_fread_int(&next_table, dbx->file);
     sys_fread_int(&index_count, dbx->file);
@@ -393,10 +393,10 @@ static int _dbx_read_indexes(dbx_t *dbx)
   int index_ptr;
   int item_count;
 
-  fseek(dbx->file, INDEX_POINTER, SEEK_SET);
+  UnDBXFile_Seek(dbx->file, INDEX_POINTER, SEEK_SET);
   sys_fread_int(&index_ptr, dbx->file);
 
-  fseek(dbx->file, ITEM_COUNT, SEEK_SET);
+  UnDBXFile_Seek(dbx->file, ITEM_COUNT, SEEK_SET);
   sys_fread_int(&item_count, dbx->file);
 
   if (item_count > 0)
@@ -548,7 +548,7 @@ static void _dbx_scan(dbx_t *dbx)
 
     /* skip contents of fragment */
     i += 0x200 - 4;
-    fseek(dbx->file, i + 20, SEEK_SET);
+    UnDBXFile_Seek(dbx->file, i + 20, SEEK_SET);
     /* header buffer should be refilled */
     ready = 0;
   }
@@ -670,13 +670,13 @@ static void _dbx_init(dbx_t *dbx)
 }
 
 
-dbx_t *dbx_open(char *filename, dbx_options_t *options)
+dbx_t *dbx_open(const char *filename, dbx_options_t *options)
 {
   dbx_t *dbx = (dbx_t *) calloc(1, sizeof(dbx_t));
 
   if (dbx) {
     dbx->progress_handle = dbx_progress_new(options->verbosity);
-    dbx->file = fopen(filename, "rb");
+    dbx->file = UnDBXFile_Open(filename, UNDBX_OPEN_FILE_TYPE_READ_BINARY);
     if (dbx->file == NULL) {
       free(dbx);
       dbx = NULL;
@@ -688,7 +688,7 @@ dbx_t *dbx_open(char *filename, dbx_options_t *options)
         dbx = NULL;
       }
       else {
-        dbx->filename = strdup(filename);
+        dbx->filename = _strdup(filename);
         dbx->file_size = sys_filesize(".", filename);
         dbx->options = options;
         _dbx_init(dbx);
@@ -705,7 +705,7 @@ void dbx_close(dbx_t *dbx)
 
   if (dbx) {
     if (dbx->file) {
-      fclose(dbx->file);
+      UnDBXFile_Close(dbx->file);
       dbx->file = NULL;
     }
 
@@ -774,7 +774,7 @@ char *dbx_message(dbx_t *dbx, int msg_number, unsigned int *psize)
   total_size = 0;
 
   while (i != 0) {
-    fseek(dbx->file, i + 8, SEEK_SET);
+    UnDBXFile_Seek(dbx->file, i + 8, SEEK_SET);
     block_size=0;
     sys_fread_short(&block_size, dbx->file);
     if (block_size <= 0 || block_size > 0x200) {
@@ -786,7 +786,7 @@ char *dbx_message(dbx_t *dbx, int msg_number, unsigned int *psize)
                            i + 8);
       break;
     }
-    fseek(dbx->file, 2, SEEK_CUR);
+    UnDBXFile_Seek(dbx->file, 2, SEEK_CUR);
     sys_fread_int(&i, dbx->file);
     total_size += block_size;
     buf = realloc(buf, total_size + 1);
@@ -826,7 +826,7 @@ char *dbx_recover_message(dbx_t *dbx, int chain_index, int msg_number, unsigned 
     pfragment = dbx->scan[chain_index].fragments + ifragment;
     /* deleted fragments have size 0x210, which is wrong - it's 0x200 */
     fsize = pfragment->size <= 0x200? pfragment->size : 0x200;
-    fseek(dbx->file, pfragment->offset + 16 - dbx->scan[chain_index].offset, SEEK_SET);
+    UnDBXFile_Seek(dbx->file, pfragment->offset + 16 - dbx->scan[chain_index].offset, SEEK_SET);
     sys_fread(message + size, fsize, 1, dbx->file);
     /* each deleted fragment starts with bad 4 bytes
        (it's set to the offset of the previous fragment)
@@ -896,7 +896,7 @@ char *dbx_recover_message(dbx_t *dbx, int chain_index, int msg_number, unsigned 
     free(from);
   }
   
-  *pfilename = strdup(filename);
+  *pfilename = _strdup(filename);
   *ptimestamp = timestamp;
   *psize = size;
 

@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include <time.h>
+#include "UnDBXFile.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -50,10 +51,10 @@ extern "C" {
   int sys_set_filetime(char *filename, filetime_t filetime);
   char *sys_basename(char *path);
   char *sys_dirname(char *path);
-  size_t sys_fread(void * ptr, size_t size, size_t nitems, FILE * stream);
-  void sys_fread_long_long(long long int *value, FILE *file);
-  void sys_fread_int(int *value, FILE *file);
-  void sys_fread_short(short *value, FILE *file);
+  size_t sys_fread(void * ptr, size_t size, size_t nitems, UnDBXFile * stream);
+  void sys_fread_long_long(long long int *value, UnDBXFile *file);
+  void sys_fread_int(int *value, UnDBXFile *file);
+  void sys_fread_short(short *value, UnDBXFile *file);
   
 #ifdef __cplusplus
 };

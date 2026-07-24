@@ -31,7 +31,7 @@ AC_SYS_LARGEFILE
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([getcwd isascii memset mkdir strcasecmp strchr strdup strncasecmp strspn strtoul utime])
+AC_CHECK_FUNCS([getcwd isascii memset mkdir strcmp strchr _strdup strncasecmp strspn strtoul utime])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
